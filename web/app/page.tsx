@@ -13,9 +13,7 @@ type Status =
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding)
-    .replace(/-/g, "+")
-    .replace(/_/g, "/");
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
 
   const rawData = window.atob(base64);
   const outputArray = new Uint8Array(rawData.length);
@@ -98,8 +96,8 @@ export default function Home() {
           TnP Notification System
         </h1>
         <p className="text-sm text-neutral-500 max-w-sm">
-          Get an instant push notification the moment a new job is posted on
-          the college TnP portal — 24/7, free, no app required.
+          Get an instant push notification when a new job is posted on the
+          college TnP portal. Checks are run every 3 hours
         </p>
       </div>
 
@@ -145,8 +143,8 @@ function StatusButton({
   if (status === "denied") {
     return (
       <p className="text-sm text-red-500 max-w-xs">
-        Notification permission was denied. Enable it in your browser
-        settings and reload the page.
+        Notification permission was denied. Enable it in your browser settings
+        and reload the page.
       </p>
     );
   }
@@ -162,8 +160,8 @@ function StatusButton({
       </button>
       {status === "error" && (
         <p className="text-xs text-red-500 max-w-xs">
-          Something went wrong{errorMessage ? `: ${errorMessage}` : ""}.
-          Please try again.
+          Something went wrong{errorMessage ? `: ${errorMessage}` : ""}. Please
+          try again.
         </p>
       )}
     </div>
