@@ -1,0 +1,43 @@
+name: TnP Portal Check
+
+on:
+  schedule:
+
+    - cron: "0 */3 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Google Chrome
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+
+      - name: Install Python dependencies
+        working-directory: scraper
+        run: pip install -r requirements.txt
+
+      - name: Run TnP scraper
+        working-directory: scraper
+        env:
+          PORTAL_LOGIN_URL: ${{ secrets.PORTAL_LOGIN_URL }}
+          PORTAL_JOBS_URL: ${{ secrets.PORTAL_JOBS_URL }}
+          PORTAL_USERNAME: ${{ secrets.PORTAL_USERNAME }}
+          PORTAL_PASSWORD: ${{ secrets.PORTAL_PASSWORD }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NOTIFY_URL: ${{ secrets.NOTIFY_URL }}
+          NOTIFIER_SECRET_KEY: ${{ secrets.NOTIFIER_SECRET_KEY }}
+        run: python scraper.py
