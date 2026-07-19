@@ -2,7 +2,6 @@ name: TnP Portal Check
 
 on:
   schedule:
-
     - cron: "0 */3 * * *"
   workflow_dispatch: {}
 
@@ -41,3 +40,10 @@ jobs:
           NOTIFY_URL: ${{ secrets.NOTIFY_URL }}
           NOTIFIER_SECRET_KEY: ${{ secrets.NOTIFIER_SECRET_KEY }}
         run: python scraper.py
+
+      - name: Upload Error Screenshot
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tnp-error-screenshot
+          path: scraper/error_screenshot.png

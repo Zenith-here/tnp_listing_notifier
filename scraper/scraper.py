@@ -1,7 +1,7 @@
 
 
 from __future__ import annotations
-
+import traceback
 import logging
 import os
 from dotenv import load_dotenv
@@ -59,31 +59,43 @@ def build_driver() -> uc.Chrome:
     return driver
 
 
-
 def login(driver: uc.Chrome) -> None:
     log.info("Navigating to login page: %s", PORTAL_LOGIN_URL)
-    driver.get(PORTAL_LOGIN_URL)
+    
+    try:
+    
+        driver.set_window_size(1920, 1080)
+        driver.get(PORTAL_LOGIN_URL)
 
-    wait = WebDriverWait(driver, PAGE_LOAD_TIMEOUT)
+        wait = WebDriverWait(driver, PAGE_LOAD_TIMEOUT)
 
+        username_field = wait.until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "input[name='identity']"))
+        )
+        password_field = driver.find_element(By.CSS_SELECTOR, "input[name='password']")
+        submit_button = driver.find_element(
+            By.CSS_SELECTOR, "button[type='submit'], input[type='submit']"
+        )
 
-    username_field = wait.until(
-        EC.presence_of_element_located((By.CSS_SELECTOR, "input[name='identity']"))
-    )
-    password_field = driver.find_element(By.CSS_SELECTOR, "input[name='password']")
-    submit_button = driver.find_element(
-        By.CSS_SELECTOR, "button[type='submit'], input[type='submit']"
-    )
+        username_field.clear()
+        username_field.send_keys(PORTAL_USERNAME)
+        password_field.clear()
+        password_field.send_keys(PORTAL_PASSWORD)
+        submit_button.click()
 
-    username_field.clear()
-    username_field.send_keys(PORTAL_USERNAME)
-    password_field.clear()
-    password_field.send_keys(PORTAL_PASSWORD)
-    submit_button.click()
+        wait.until(EC.url_changes(PORTAL_LOGIN_URL))
+        log.info("Login submitted, current URL: %s", driver.current_url)
 
-
-    wait.until(EC.url_changes(PORTAL_LOGIN_URL))
-    log.info("Login submitted, current URL: %s", driver.current_url)
+    except Exception as e:
+        log.error("Login failed! Taking diagnostic screenshot...")
+       
+        driver.save_screenshot("error_screenshot.png")
+      
+        log.error("--- PAGE SOURCE START ---")
+        log.error(driver.page_source[:5000]) 
+        log.error("--- PAGE SOURCE END ---")
+        raise e
+    
 
 
 def find_recent_jobs_table(driver: uc.Chrome):
