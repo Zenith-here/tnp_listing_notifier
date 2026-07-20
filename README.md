@@ -6,11 +6,11 @@ To receive real-time placement alerts, open the link below and follow the instru
 
 ---
 
-### Android & Desktop (Chrome / Edge)
+### 🤖Android & Desktop (Chrome / Edge)
 
 - Click the link above, tap **"Enable Notifications"**, and select **Allow** when prompted by the browser.
 
-### Brave Browser Users
+### 🦁Brave Browser Users
 
 Brave aggressively blocks native web push hooks by default. If you prefer using Brave:
 
@@ -21,7 +21,7 @@ Brave aggressively blocks native web push hooks by default. If you prefer using 
 
 - _Alternative:_ Open the link inside **Google Chrome** instead.
 
-### iOS / iPhone Users (Safari)
+### 🍎iOS / iPhone Users (Safari)
 
 Apple restricts background web push notifications unless the site is added as a web app.
 
