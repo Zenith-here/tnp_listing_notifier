@@ -24,7 +24,6 @@ log = logging.getLogger("tnp-scraper")
 
 PORTAL_LOGIN_URL = os.environ["PORTAL_LOGIN_URL"]
 PORTAL_JOBS_URL = os.environ.get("PORTAL_JOBS_URL") or PORTAL_LOGIN_URL
-# Derived URL for News & Events page based on your dashboard screenshot structure
 PORTAL_NEWS_URL = PORTAL_LOGIN_URL.rstrip('/') + "/newsevents"
 
 PORTAL_USERNAME = os.environ["PORTAL_USERNAME"]
@@ -155,7 +154,7 @@ def parse_news_events(driver: uc.Chrome) -> list[NewsEvent]:
     rows = table.find_elements(By.CSS_SELECTOR, "tbody tr")
     events: list[NewsEvent] = []
     
-    # SLICE: Only look at the top 10 most recent entries
+
     for row in rows[:10]:
         cells = row.find_elements(By.TAG_NAME, "td")
         if not cells:
@@ -249,10 +248,8 @@ def main() -> int:
         })
         new_jobs_count += 1
 
-    # 3. Process News Matches
-    # 3. Process News Matches
+   
     new_news_count = 0
-    # COLD START CHECK: If database is brand new, don't spam notifications
     is_news_cold_start = len(known_news_urls) == 0
     
     for event in events:

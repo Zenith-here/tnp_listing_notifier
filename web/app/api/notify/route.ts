@@ -36,7 +36,6 @@ export async function POST(request: NextRequest) {
 
   const { company, url, title, type } = body;
 
-  // We only strictly require the URL now, because news updates won't have a company
   if (!url) {
     return NextResponse.json(
       { error: "Missing required field: url" },
@@ -71,7 +70,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, sent: 0, failed: 0 });
   }
 
-  // Dynamically set the body text based on the type
   let bodyText = "Click to view details on the TnP Portal.";
   if (type === "job") {
     bodyText = `${company} just posted a new listing. Tap to view & apply.`;
@@ -80,7 +78,7 @@ export async function POST(request: NextRequest) {
   }
 
   const payload = JSON.stringify({
-    title: title || "TnP Portal Update", // Falls back to generic text if Python fails to send a title
+    title: title || "TnP Portal Update",
     body: bodyText,
     url,
     tag: url,
@@ -99,14 +97,14 @@ export async function POST(request: NextRequest) {
             keys: { p256dh: sub.p256dh, auth: sub.auth },
           },
           payload,
-          // Added TTL (24h) and urgency to bypass Android Doze mode limits
+
           { urgency: "high", TTL: 86400 },
         );
         sent += 1;
       } catch (err) {
         failed += 1;
         const statusCode = (err as { statusCode?: number })?.statusCode;
-        // 404/410 means the subscription is no longer valid — clean it up.
+
         if (statusCode === 404 || statusCode === 410) {
           deadSubscriberIds.push(sub.id);
         } else {
