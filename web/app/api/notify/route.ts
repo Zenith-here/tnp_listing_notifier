@@ -3,7 +3,9 @@ import webpush from "web-push";
 import { getSupabaseAdmin } from "@/lib/supabase";
 
 type NotifyPayload = {
-  company: string;
+  type?: "job" | "news";
+  company?: string;
+  title?: string;
   url: string;
 };
 
@@ -32,11 +34,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const { company, url } = body;
-  if (!company || !url) {
+  const { company, url, title, type } = body;
+
+  // We only strictly require the URL now, because news updates won't have a company
+  if (!url) {
     return NextResponse.json(
-      { error: "Missing required fields: company, url" },
-      { status: 400 }
+      { error: "Missing required field: url" },
+      { status: 400 },
     );
   }
 
@@ -46,7 +50,7 @@ export async function POST(request: NextRequest) {
     console.error(err);
     return NextResponse.json(
       { error: "Push notifications are not configured on the server" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -59,7 +63,7 @@ export async function POST(request: NextRequest) {
     console.error("Failed to fetch subscribers:", error);
     return NextResponse.json(
       { error: "Failed to fetch subscribers" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -67,9 +71,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, sent: 0, failed: 0 });
   }
 
+  // Dynamically set the body text based on the type
+  let bodyText = "Click to view details on the TnP Portal.";
+  if (type === "job") {
+    bodyText = `${company} just posted a new listing. Tap to view & apply.`;
+  } else if (type === "news") {
+    bodyText = "Tap to view the new announcement on the portal.";
+  }
+
   const payload = JSON.stringify({
-    title: `New TnP Job: ${company}`,
-    body: `${company} just posted a new listing. Tap to view & apply.`,
+    title: title || "TnP Portal Update", // Falls back to generic text if Python fails to send a title
+    body: bodyText,
     url,
     tag: url,
   });
@@ -86,7 +98,9 @@ export async function POST(request: NextRequest) {
             endpoint: sub.endpoint,
             keys: { p256dh: sub.p256dh, auth: sub.auth },
           },
-          payload
+          payload,
+          // Added TTL (24h) and urgency to bypass Android Doze mode limits
+          { urgency: "high", TTL: 86400 },
         );
         sent += 1;
       } catch (err) {
@@ -99,7 +113,7 @@ export async function POST(request: NextRequest) {
           console.error(`Failed to notify subscriber ${sub.id}:`, err);
         }
       }
-    })
+    }),
   );
 
   if (deadSubscriberIds.length > 0) {
