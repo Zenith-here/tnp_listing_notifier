@@ -90,22 +90,58 @@ export default function Home() {
   }
 
   return (
-    <main className="flex-1 flex flex-col items-center justify-center gap-6 px-6 py-16 text-center">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">
-          TnP Notification System
-        </h1>
-        <p className="text-sm text-neutral-500 max-w-sm">
-          Get an instant push notification when a new job is posted on the
-          college TnP portal. Checks are run every 3 hours
-        </p>
+    // Changed to min-h-screen and removed justify-center here
+    <main className="flex min-h-screen flex-col">
+      {/* Wrapped top content in a flex-grow container to center it and push the footer down */}
+      <div className="flex flex-grow flex-col items-center justify-center gap-6 px-6 py-16 text-center">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-bold tracking-tight">
+            TnP Notification System
+          </h1>
+          <p className="text-sm text-neutral-500 max-w-sm">
+            Get an instant push notification when a new job is posted on the
+            college TnP portal. Checks are run every 3 hours.
+            <br />
+            <br />
+            Brave Browser blocks push notifications. Prefer google chrome or
+            firefox.
+          </p>
+        </div>
+
+        <StatusButton
+          status={status}
+          onClick={enableNotifications}
+          errorMessage={errorMessage}
+        />
       </div>
 
-      <StatusButton
-        status={status}
-        onClick={enableNotifications}
-        errorMessage={errorMessage}
-      />
+      {/* Footer is now locked to the bottom with w-full and py-6 */}
+      <div className="w-full border-t border-gray-800 py-6 text-center">
+        <div className="flex justify-center space-x-6 text-sm font-medium text-gray-400">
+          <a
+            href="mailto:ash.alvin.1954@gmail.com"
+            className="hover:text-white transition-colors duration-200"
+          >
+            Email
+          </a>
+          <a
+            href="https://github.com/Zenith-here"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-white transition-colors duration-200"
+          >
+            GitHub
+          </a>
+          <a
+            href="https://www.linkedin.com/in/ashish-kumar-gupta-997039217/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-white transition-colors duration-200"
+          >
+            Linkedin
+          </a>
+        </div>
+      </div>
     </main>
   );
 }

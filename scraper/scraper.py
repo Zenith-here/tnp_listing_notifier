@@ -65,7 +65,17 @@ def login(driver: uc.Chrome) -> None:
     log.info("Navigating to login page: %s", PORTAL_LOGIN_URL)
     try:
         driver.set_window_size(1920, 1080)
-        driver.get(PORTAL_LOGIN_URL)
+        max_attempts = 3
+        for attempt in range(max_attempts):
+            try:
+                driver.get(PORTAL_LOGIN_URL)
+                break 
+            except Exception as e:
+                if attempt == max_attempts - 1:
+                    raise e 
+                log.warning("Page load timed out. Retrying... (%d/%d)", attempt + 1, max_attempts)
+                time.sleep(2)
+
         wait = WebDriverWait(driver, PAGE_LOAD_TIMEOUT)
 
         username_field = wait.until(

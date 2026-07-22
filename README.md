@@ -49,4 +49,4 @@ This project is built using a modern serverless and automated architecture:
 If you have any questions, suggestions, or want to discuss the architecture, feel free to reach out!
 
 - **Email:** ash.alvin.1954@gmail.com
-- **Twitter/X:** [@AshGupta_h3re](https://twitter.com/AshGupta_h3re)
+- **Twitter/X:** [@AshGupta_h3re](https://x.com/AshGupta_h3re)
